@@ -1,4 +1,4 @@
-const API_URL = 'https://cardio-risk-ml-system.onrender.com/';
+const API_URL = 'https://cardio-risk-ml-system.onrender.com/api';
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
