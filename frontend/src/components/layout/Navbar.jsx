@@ -21,7 +21,10 @@ const Navbar = () => {
         { name: 'Dashboard', path: '/dashboard' }
     ];
 
-    const isActive = (path) => location.pathname === path;
+    const isActive = (path) => {
+        if(!user && path === '/dashboard') return false;
+        return location.pathname === path;
+    };
 
     return (
         <nav className="fixed w-full z-50 bg-white/80 dark:bg-dark-card/80 backdrop-blur-md shadow-sm transition-colors duration-300">
