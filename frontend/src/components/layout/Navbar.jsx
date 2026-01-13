@@ -14,9 +14,11 @@ const Navbar = () => {
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Predict', path: '/predict' },
-        { name: 'Dashboard', path: '/dashboard' },
         { name: 'Model Analysis', path: '/model-performance' },
         { name: 'Health Info', path: '/health-info' },
+    ];
+    const publicLinks = [
+        { name: 'Dashboard', path: '/dashboard' }
     ];
 
     const isActive = (path) => location.pathname === path;
@@ -47,6 +49,21 @@ const Navbar = () => {
                                 {link.name}
                             </Link>
                         ))}
+                        {user &&
+                            protectedLinks.map((link) => (
+                                <Link
+                                key={link.name}
+                                to={link.path}
+                                className={`text-sm font-medium transition-colors duration-200 ${
+                                    isActive(link.path)
+                                    ? 'text-primary'
+                                    : 'text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary'
+                                }`}
+                                >
+                                {link.name}
+                                </Link>
+                        ))}
+
 
                         {/* Theme Toggle */}
                         <button
@@ -130,6 +147,23 @@ const Navbar = () => {
                                     {link.name}
                                 </Link>
                             ))}
+                            {user &&
+                                protectedLinks.map((link) => (
+                                    <Link
+                                    key={link.name}
+                                    to={link.path}
+                                    onClick={() => setIsOpen(false)}
+                                    className={`block px-3 py-2 rounded-md text-base font-medium ${
+                                        isActive(link.path)
+                                        ? 'bg-primary/10 text-primary'
+                                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                    }`}
+                                    >
+                                    {link.name}
+                                    </Link>
+                            ))}
+
+
                             {user ? (
                                 <button
                                     onClick={() => {
