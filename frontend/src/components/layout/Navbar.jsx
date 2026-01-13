@@ -17,7 +17,7 @@ const Navbar = () => {
         { name: 'Model Analysis', path: '/model-performance' },
         { name: 'Health Info', path: '/health-info' },
     ];
-    const publicLinks = [
+    const protectedLinks = [
         { name: 'Dashboard', path: '/dashboard' }
     ];
 
