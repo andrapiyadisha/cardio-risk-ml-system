@@ -7,7 +7,7 @@ import Button from '../components/common/Button';
 
 const Result = () => {
     const location = useLocation();
-    const { result } = location.state || {}; // { riskScore: "45.0", riskCategory: "Medium", probability: 0.45 }
+    const { result } = location.state || {}; 
 
     if (!result) {
         return <Navigate to="/predict" replace />;
