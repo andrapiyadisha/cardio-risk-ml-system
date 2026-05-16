@@ -8,16 +8,15 @@ import sys
 import jwt
 from functools import wraps
 
-# Ensure src module can be found
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}}) # Allow all origins for development
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cardio.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'dev-secret-key' # Change for production
+app.config['SECRET_KEY'] = 'dev-secret-key'
 
 db = SQLAlchemy(app)
 
@@ -34,8 +33,7 @@ def token_required(f):
             return jsonify({'error': 'Token is missing!'}), 401
         
         try:
-            # For simplicity with the existing "mock-token-ID", we accept that 
-            # Or use real JWT. Let's support both for transition.
+           
             if token.startswith('mock-token-'):
                 user_id = token.split('-')[-1]
                 current_user = User.query.get(int(user_id))
@@ -80,7 +78,7 @@ class Prediction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Inputs (Updated for Cardio Dataset)
+    # Inputs 
     age = db.Column(db.Integer)
     gender = db.Column(db.Integer)
     height = db.Column(db.Integer)
@@ -99,7 +97,7 @@ class Prediction(db.Model):
 
 # --- LOAD MODEL ---
 import pickle
-from src.model import predict as model_predict # Import manual predict function
+from src.model import predict as model_predict 
 
 model = None
 try:
@@ -119,12 +117,12 @@ def register():
     new_user = User(
         name=data['fullName'],
         email=data['email'],
-        password=data['password'] # Note: Hash this in production!
+        password=data['password'] 
     )
     db.session.add(new_user)
     db.session.commit()
     
-    # Generate a real JWT token for consistency
+    # Generate JWT token 
     token = jwt.encode({
         'user_id': new_user.id,
         'exp': datetime.utcnow() + timedelta(hours=24)
@@ -152,7 +150,7 @@ def login():
         return jsonify({'error': 'Invalid password.'}), 401
     
     # Successful login
-    # Generate a real JWT token
+    # Generate JWT token
     token = jwt.encode({
         'user_id': user.id,
         'exp': datetime.utcnow() + timedelta(hours=24)
@@ -166,7 +164,6 @@ def login():
 # --- MODEL METRICS ROUTES ---
 @app.route('/api/model/metrics', methods=['GET'])
 def get_model_metrics():
-    # Mock data for visualization (would ideally come from src/train.py results)
     return jsonify({
         "accuracy": 0.72,
         "precision": 0.75,
@@ -194,7 +191,7 @@ def get_model_metrics():
 @app.route('/api/predict', methods=['POST'])
 def predict_route():
     data = request.json
-    user_id = data.get('userId') # Optional for guests
+    user_id = data.get('userId')
     
     try:
         def safe_int(val, default=0):
@@ -212,10 +209,6 @@ def predict_route():
                 return float(val)
             except:
                 return default
-
-        # Order from CardioPreprocessing.csv (excluding index and target):
-        # gender, weight, ap_hi, ap_lo, cholesterol, gluc, smoke, alco, active, 
-        # age_years, bmi, pulse_pressure, health_index, cholesterol_gluc_interaction, bmi_category
 
         # Extract base inputs
         age_years = safe_int(data.get('age'))
@@ -307,7 +300,7 @@ def predict_route():
             db.session.add(prediction)
             db.session.commit()
         
-        # Calculate key factors for UI (top 3 highest impacting variables)
+        # Calculate key factors for UI 
         impact_factors = []
         if ap_hi > 140: impact_factors.append("High Systolic BP")
         if cholesterol > 1: impact_factors.append("Elevated Cholesterol")
@@ -368,7 +361,7 @@ def get_stats(current_user):
         
     last_pred = predictions[0]
     
-    # Calculate monthly averages for chart (simplified)
+    # Calculate monthly averages
     chart_data = [{'date': p.date.strftime('%b %d'), 'score': p.risk_score} for p in predictions[:6]][::-1]
 
     return jsonify({
